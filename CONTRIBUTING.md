@@ -29,3 +29,28 @@ Contributions without a properly signed DCO cannot be accepted into the project.
 For more information about the Developer Certificate of Origin, please see the DCO 1.1 FAQ.
 
 Thank you for your understanding and cooperation! We look forward to your contributions.
+
+## Setting up this repository for development
+
+- Clone the project locally:
+  ```sh
+  gh repo clone blackrock/ingen
+  ```
+- Create a Python virtual environment (Python 3.12 recommended):
+  ```sh
+  python -m venv venv
+  source venv/bin/activate
+  ```
+- Install dependencies:
+  ```sh
+  pip install -r requirements.txt
+  ```
+
+## Testing
+
+- Ensure repository has at least **95%** code coverage. This is enforced automatically in CI via `--cov-fail-under=95`.
+- Install `pytest`, `pytest-cov` and `coverage` via pip. Run the following command to check code coverage locally:
+  ```sh
+  pip install pytest pytest-cov coverage
+  pytest test/ --cov=ingen --cov-fail-under=95 --cov-report= && coverage report -m
+  ```
