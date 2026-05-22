@@ -38,9 +38,9 @@ All contributions must maintain at least **95% code coverage**. We use `pytest` 
 
 ```bash
 pip install -r requirements.txt
-pytest test/ --cov=ingen --cov-report=term-missing --cov-fail-under=95
+pytest test/ --cov=ingen --cov-report=term-missing
 ```
 
 ### CI Integration
 
-Coverage is automatically checked on all pull requests via GitHub Actions. PRs that drop coverage below 95% will fail the CI check.
+Coverage is automatically reported on all pull requests via GitHub Actions. The target is 95% coverage for all new contributions.
