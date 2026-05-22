@@ -29,3 +29,18 @@ Contributions without a properly signed DCO cannot be accepted into the project.
 For more information about the Developer Certificate of Origin, please see the DCO 1.1 FAQ.
 
 Thank you for your understanding and cooperation! We look forward to your contributions.
+
+## Testing and Code Coverage
+
+All contributions must maintain at least **95% code coverage**. We use `pytest` with `pytest-cov` for testing and coverage reporting.
+
+### Running Tests with Coverage
+
+```bash
+pip install -r requirements.txt
+pytest test/ --cov=ingen --cov-report=term-missing --cov-fail-under=95
+```
+
+### CI Integration
+
+Coverage is automatically checked on all pull requests via GitHub Actions. PRs that drop coverage below 95% will fail the CI check.

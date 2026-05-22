@@ -1,4 +1,8 @@
+#  Copyright (c) 2023 BlackRock, Inc.
+#  All Rights Reserved.
+
 import unittest
+
 import pandas as pd
 
 from ingen.pre_processor.not_equals_filter import NotEqualsFilter
@@ -8,44 +12,60 @@ class TestNotEqualsFilter(unittest.TestCase):
 
     def setUp(self):
         self.filter = NotEqualsFilter()
-        self.sample_data = pd.DataFrame({
-            "id": ['user1', 'user2', 'user3', 'user4', 'user5'],
-            "SYSTEM": ['SYS_A', 'SYS_A', 'SYS_B', 'SYS_B', 'SYS_C'],
-            "email": ['user1@example.com', 'user2@example.com', 'user3@example.com', 'user4@example.com',
-                      'user5@example.com']
+        self.df = pd.DataFrame({
+            "name": ["Alice", "Bob", "Charlie", "Dave"],
+            "status": ["active", "inactive", "active", "pending"]
         })
 
-    def test_not_equals_filter_single_value(self):
-        """Test filtering out rows where SYSTEM is SYS_A"""
+    def test_basic_exclude(self):
         config = {
-            "cols": [
-                {"col": "SYSTEM", "val": ["SYS_A"]}
-            ]
+            'cols': [{'col': 'status', 'val': ['inactive']}]
         }
-        result = self.filter.execute(config, {}, self.sample_data)
+        result = self.filter.execute(config, {}, self.df)
         self.assertEqual(len(result), 3)
-        self.assertListEqual(result["id"].tolist(), ["user3", "user4", "user5"])
+        self.assertNotIn("inactive", result["status"].values)
 
-    def test_not_equals_filter_multiple_values(self):
-        """Test filtering out rows where SYSTEM is SYS_A or SYS_B"""
+    def test_exclude_multiple_values(self):
         config = {
-            "cols": [
-                {"col": "SYSTEM", "val": ["SYS_A", "SYS_B"]}
-            ]
+            'cols': [{'col': 'status', 'val': ['inactive', 'pending']}]
         }
-        result = self.filter.execute(config, {}, self.sample_data)
-        self.assertEqual(len(result), 1)
-        self.assertListEqual(result["id"].tolist(), ["user5"])
+        result = self.filter.execute(config, {}, self.df)
+        self.assertEqual(len(result), 2)
 
-    def test_not_equals_filter_empty_dataframe(self):
-        """Test with empty DataFrame"""
+    def test_empty_dataframe(self):
         config = {
-            "cols": [
-                {"col": "SYSTEM", "val": ["SYS_A"]}
-            ]
+            'cols': [{'col': 'status', 'val': ['inactive']}]
         }
-        empty_df = pd.DataFrame()
+        result = self.filter.execute(config, {}, pd.DataFrame())
+        self.assertTrue(result.empty)
 
-        result = self.filter.execute(config, {}, empty_df)
+    def test_none_dataframe(self):
+        config = {
+            'cols': [{'col': 'status', 'val': ['inactive']}]
+        }
+        result = self.filter.execute(config, {}, None)
+        self.assertTrue(result.empty)
 
-        self.assertEqual(result.empty, True)
+    def test_no_cols(self):
+        config = {'cols': []}
+        result = self.filter.execute(config, {}, self.df)
+        self.assertEqual(len(result), 4)
+
+    def test_source_from_sources_data(self):
+        config = {
+            'source': 'src1',
+            'cols': [{'col': 'status', 'val': ['active']}]
+        }
+        result = self.filter.execute(config, {'src1': self.df}, self.df)
+        self.assertEqual(len(result), 2)
+
+    def test_nonexistent_column(self):
+        config = {
+            'cols': [{'col': 'nonexistent', 'val': ['value']}]
+        }
+        result = self.filter.execute(config, {}, self.df)
+        self.assertEqual(len(result), 4)
+
+
+if __name__ == '__main__':
+    unittest.main()
