@@ -1079,5 +1079,83 @@ class TestMetadata(unittest.TestCase):
         self.assertEqual(m.name, 'test_interface')
 
 
+class TestReaderFactory(unittest.TestCase):
+    """Cover reader/file_reader.py ReaderFactory"""
+
+    def test_get_csv_reader(self):
+        from ingen.reader.file_reader import ReaderFactory
+        r = ReaderFactory.get_reader({'file_type': 'delimited_file'})
+        self.assertIsNotNone(r)
+
+    def test_get_excel_reader(self):
+        from ingen.reader.file_reader import ReaderFactory
+        r = ReaderFactory.get_reader({'file_type': 'excel'})
+        self.assertIsNotNone(r)
+
+    def test_get_xml_reader(self):
+        from ingen.reader.file_reader import ReaderFactory
+        r = ReaderFactory.get_reader({'file_type': 'xml'})
+        self.assertIsNotNone(r)
+
+    def test_get_json_reader(self):
+        from ingen.reader.file_reader import ReaderFactory
+        r = ReaderFactory.get_reader({'file_type': 'json'})
+        self.assertIsNotNone(r)
+
+    def test_get_fwf_reader(self):
+        from ingen.reader.file_reader import ReaderFactory
+        r = ReaderFactory.get_reader({'file_type': 'fixed_width'})
+        self.assertIsNotNone(r)
+
+    def test_get_unknown_reader(self):
+        from ingen.reader.file_reader import ReaderFactory
+        r = ReaderFactory.get_reader({'file_type': 'unknown'})
+        self.assertIsNone(r)
+
+
+class TestJSONFileReader(unittest.TestCase):
+    """Cover reader/json_reader.py"""
+
+    def test_read_json_file(self):
+        from ingen.reader.json_reader import JSONFileReader
+        import tempfile, json
+        data = [{'a': 1, 'b': 2}, {'a': 3, 'b': 4}]
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+            json.dump(data, f)
+            f.flush()
+            reader = JSONFileReader()
+            df = reader.read({'file_path': f.name})
+            self.assertEqual(len(df), 2)
+            self.assertIn('a', df.columns)
+
+
+class TestProcess(unittest.TestCase):
+    """Cover pre_processor/process.py"""
+
+    def test_process_execute_returns_none(self):
+        from ingen.pre_processor.process import Process
+        p = Process()
+        result = p.execute({}, {}, None)
+        self.assertIsNone(result)
+
+
+class TestBaseInterfaceGenerator(unittest.TestCase):
+    """Cover generators/base_interface_generator.py"""
+
+    def test_notify_does_nothing(self):
+        from ingen.generators.base_interface_generator import BaseInterfaceGenerator
+
+        class DummyGen(BaseInterfaceGenerator):
+            def read(self, sources): pass
+            def pre_process(self, pre_processes, sources): pass
+            def format(self, data, columns, params): pass
+            def write(self, data, destination, params): pass
+            def validate(self, df, columns, data=None, sources=None): pass
+            def post_process(self, formatted_data, post_processes): pass
+
+        g = DummyGen()
+        g.notify({}, None, {})
+
+
 if __name__ == '__main__':
     unittest.main()

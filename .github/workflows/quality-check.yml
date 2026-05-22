@@ -26,7 +26,7 @@ jobs:
         echo 'pandas<3.0' >> /tmp/constraints.txt
         PIP_CONSTRAINT=/tmp/constraints.txt pip install -r requirements.txt
         PIP_CONSTRAINT=/tmp/constraints.txt pip install "great_expectations<0.18.0"
-        pip install pytest pytest-cov coverage openpyxl
+        pip install pytest pytest-cov coverage openpyxl mysql-connector-python
     - name: Test with pytest and coverage
       run: |
         pytest test/ --cov=ingen --cov-report=term-missing --cov-fail-under=95 --junitxml=junit/test-results.xml
