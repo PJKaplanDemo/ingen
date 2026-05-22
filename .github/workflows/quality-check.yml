@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest pytest-cov coverage
+          pip install pytest pytest-cov coverage openpyxl mysql-connector-python
           pip install -r requirements.txt
           sed -i "s/{{VERSION_PLACEHOLDER}}/0.0.0/g" setup.py
           pip install -e .
