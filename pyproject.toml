@@ -1,3 +1,14 @@
 [build-system]
 requires = ['setuptools>=65']
 build-backend = 'setuptools.build_meta'
+
+[tool.pytest.ini_options]
+testpaths = ["test"]
+addopts = "--cov=ingen --cov-fail-under=95"
+
+[tool.coverage.run]
+source = ["ingen"]
+
+[tool.coverage.report]
+fail_under = 95
+show_missing = true
